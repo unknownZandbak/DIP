@@ -9,27 +9,37 @@ index_lookup = {
     "t": 19,"u": 20, "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, " ": 26, "&": 27
 }
 
-textEN = textEN.casefold()
-textEN = textEN.replace("\n", "")
+unique_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ":", "-", "!", "/", ".", ",", "(", ")", "[", "]", "{", "}", ";" "?"]
 
-textNL = textNL.casefold()
-textNL = textNL.replace("\n", "")
+def pre_procces(text: str) -> str:
 
-def pre_procces() -> str:
-    pass
+    text = text.casefold()
+    text = text.replace(u"\n", "")
+    text = text.replace(u"\xa0", "")
+    for char in unique_characters:
+        text = text.replace(char, "&")    
+    
+    return text
 
-def frequentie(text) -> dict:
+def frequency(text: str) -> dict:
     freq = {}
 
     for i in range(len(text)-1):
         bigramm = f"{text[i]}{text[i+1]}"
         freq[f"{bigramm}"] = freq[f"{bigramm}"]+1 if bigramm in freq else 1
+
     return freq
 
-def to_freq_matrix(ferqdict: dict) -> np.array():
+def to_freq_matrix(ferqdict: dict) -> np.array:
     pass
 
 if __name__ == "__main__" :
-    freqEN = frequentie(textEN)
-    freqNL = frequentie(textNL)
+    textEN = pre_procces(textEN)
+    freqEN = frequency(textEN)
+    freq_matrixEN = to_freq_matrix(freqEN)
+
+    # textNL = pre_procces(textNL)
+    # freqNL = frequency(textNL)
+    # freq_matrixNL = to_freq_matrix(freqNL)
+
     print(freqEN)
