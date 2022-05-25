@@ -1,5 +1,4 @@
-bookNL = """
-                         FRITS MILLIOEN
+FRITS MILLIOEN
 
                        EN ZIJNE VRIENDEN
 
@@ -17029,4 +17028,3 @@ waarmee de Fransche dichter de vraag beantwoordde naar welk model hij
 de gouden keten wenschte gemaakt te hebben, die de koning van Pruisen
 hem ten geschenke wilde geven. »Neem het model naar den ketting van
 den regenbak!"
-"""
