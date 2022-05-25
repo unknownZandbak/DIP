@@ -1,6 +1,6 @@
 import numpy as np
 
-with open("data/nl/book2.txt") as file:
+with open("data/nl/book1.txt") as file:
     bookNL = file.read()
 
 with open("data/en/book2.txt",) as file:
@@ -15,16 +15,22 @@ index_lookup = {
 unique_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ":", "-",
 "!", "/", ",", "(", ")", "[", "]", "{", "}", ";", "?", "'", '"', "*", "#", ]
 
-def pre_procces(text: str) -> str:
 
+
+def pre_procces(text: str) -> str:
+    """pre-procces the text so that weird symbols and unwanted unicode is removed.
+
+    Args:
+        text (str): text to preprocces.
+
+    Returns:
+        str: proccesed text.
+    """
     text = text.casefold()
     text = text.replace("_", "")
     text = text.replace(u"\n", "")
     text = text.replace(u"\xa0", "")
 
-    for char in unique_characters:
-        text = text.replace(char, "&")    
-    
     return text
 
 def getFreqMatrix(text: str) -> np.array:
@@ -113,7 +119,7 @@ def test_model(test_set: list, matrixNL, matrixEN) -> float:
         
     return (sum(accuracy)/len(accuracy))*100
 
-def gen_test_set(file_path: str, target: int)-> list:
+def gen_test_set(file_path: str, target: int, delimiter=".")-> list:
     """generate a test set from a given text file.
 
     Args:
@@ -128,7 +134,7 @@ def gen_test_set(file_path: str, target: int)-> list:
     with open(file_path) as file:
         test_set = file.read()
         test_set = pre_procces(test_set)
-        test_set = test_set.split(".")
+        test_set = test_set.split(delimiter)
         test_set = list(zip(test_set, [target]*len(test_set)))
 
     return test_set
@@ -153,3 +159,27 @@ if __name__ == "__main__" :
     print(f"===========\nTesting English sentences\n--")
     print(f"Lenght of data set:\t{len(test_set_en)}")
     print(f"Accuracy Score:\t{test_model(test_set_en, matrix_bookNL, matrix_bookEN)}%")
+
+    # testing a given file to seperate english and dutch words
+    print("\nRunning word sepration task")
+    with open("data/sentences-nl-en.txt") as file:
+        nl_enSentences = file.read()
+    print(f"")
+    nl_enSentences = nl_enSentences.replace("."," ")
+    nl_enSentences = pre_procces(nl_enSentences)
+    nl_enSentences = nl_enSentences.split(" ")
+    print(f"===========\nTesting English sentences\n--")
+    en_col = []
+    nl_col = []
+    for word in nl_enSentences:
+        result = predict_language(word, matrix_bookNL, matrix_bookEN)
+        if result == 0:
+            en_col.append(word)
+        elif result == 1:
+            nl_col.append(word)
+    print(f"English collectio: {en_col}")
+    print(f"Dutch collection: {nl_col}")
+
+    print(f"lenght en: {len(en_col)}")
+    print(f"lenght nl: {len(nl_col)}")
+
