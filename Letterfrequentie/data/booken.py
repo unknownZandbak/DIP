@@ -20,12 +20,6 @@ Language: English
 
 
 
-Produced by Jason Isbell, Irma Spehar, and the Online
-Distributed Proofreading Team at http://www.pgdp.net
-
-
-
-
 
 
 
