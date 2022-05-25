@@ -1,34 +1,4 @@
-bookEN = """The Project Gutenberg EBook of Alice in Wonderland, by Lewis Carroll
-
-This eBook is for the use of anyone anywhere at no cost and with almost no
-restrictions whatsoever. You may copy it, give it away or re-use it under the
-terms of the Project Gutenberg License online at www.gutenberg.org
-
-Title: Alice in Wonderland
-
-Author: Lewis Carroll
-
-Illustrator: Gordon Robinson
-
-Release Date: August 12, 2006 [EBook #19033]
-
-Language: English
-
-
-*** START OF THIS PROJECT GUTENBERG EBOOK ALICE IN WONDERLAND ***
-
-
-
-
-
-
-
-
-
-          [Illustration: Alice in the Room of the Duchess.]
-
-
-                       _THE "STORYLAND" SERIES_
+_THE "STORYLAND" SERIES_
 
 
 
@@ -1322,14 +1292,3 @@ sister, as well as she could remember them, all these strange adventures
 of hers that you have just been reading about. Alice got up and ran off,
 thinking while she ran, as well she might, what a wonderful dream it had
 been.
-
-[Illustration]
-
-
-
-
-
-End of the Project Gutenberg EBook of Alice in Wonderland, by Lewis Carroll
-
-*** END OF THIS PROJECT GUTENBERG EBOOK ALICE IN WONDERLAND ***
-"""
