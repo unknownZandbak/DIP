@@ -1,3 +1,4 @@
+from optparse import Values
 import numpy as np
 # import the texts as strings
 from data.booknl import textNL
@@ -9,13 +10,16 @@ index_lookup = {
     "t": 19,"u": 20, "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, " ": 26, "&": 27
 }
 
-unique_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ":", "-", "!", "/", ".", ",", "(", ")", "[", "]", "{", "}", ";" "?"]
+unique_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ":", "-",
+"!", "/", ".", ",", "(", ")", "[", "]", "{", "}", ";", "?", "'", '"', "*", "#", ]
 
 def pre_procces(text: str) -> str:
 
     text = text.casefold()
+    text = text.replace("_", "")
     text = text.replace(u"\n", "")
     text = text.replace(u"\xa0", "")
+
     for char in unique_characters:
         text = text.replace(char, "&")    
     
@@ -30,8 +34,12 @@ def frequency(text: str) -> dict:
 
     return freq
 
-def to_freq_matrix(ferqdict: dict) -> np.array:
-    pass
+def to_freq_matrix(freqdict: dict) -> np.array:
+    freqmatrix = np.zeros((28, 28), dtype=int)
+    for bigramm in freqdict:
+        char1, char2 = bigramm
+        freqmatrix[index_lookup[char1 if char1 in index_lookup else "&"]][index_lookup[char2 if char2 in index_lookup else "&"]] = freqdict[bigramm]
+    return freqmatrix
 
 if __name__ == "__main__" :
     textEN = pre_procces(textEN)
@@ -42,4 +50,4 @@ if __name__ == "__main__" :
     # freqNL = frequency(textNL)
     # freq_matrixNL = to_freq_matrix(freqNL)
 
-    print(freqEN)
+    print(freq_matrixEN)
