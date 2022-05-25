@@ -1,7 +1,10 @@
 import numpy as np
-# import the texts as strings
-from data.booknl import bookNL
-from data.booken import bookEN
+
+with open("data/nl/book2.txt") as file:
+    bookNL = file.read()
+
+with open("data/en/book2.txt",) as file:
+    bookEN = file.read()
 
 index_lookup = {
     "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7, "i": 8, "j": 9,
@@ -10,7 +13,7 @@ index_lookup = {
 }
 
 unique_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ":", "-",
-"!", "/", ".", ",", "(", ")", "[", "]", "{", "}", ";", "?", "'", '"', "*", "#", ]
+"!", "/", ",", "(", ")", "[", "]", "{", "}", ";", "?", "'", '"', "*", "#", ]
 
 def pre_procces(text: str) -> str:
 
@@ -30,47 +33,94 @@ def getFreqMatrix(text: str) -> np.array:
     for i in range(len(text)-1):
         bigramm = f"{text[i]}{text[i+1]}"
         freq[f"{bigramm}"] = freq[f"{bigramm}"]+1 if bigramm in freq else 1
-        matrix = to_freq_matrix(freq)
+
+    # turn the generated dict to a np matrix
+    matrix = np.zeros((28, 28), dtype=int)
+    for bigramm in freq:
+        char1, char2 = bigramm
+        matrix[index_lookup[char1 if char1 in index_lookup else "&"]][index_lookup[char2 if char2 in index_lookup else "&"]] = freq[bigramm]
+        
     return matrix
 
-def to_freq_matrix(freqdict: dict) -> np.array:
-    freqmatrix = np.zeros((28, 28), dtype=int)
-    for bigramm in freqdict:
-        char1, char2 = bigramm
-        freqmatrix[index_lookup[char1 if char1 in index_lookup else "&"]][index_lookup[char2 if char2 in index_lookup else "&"]] = freqdict[bigramm]
-    return freqmatrix
-
-def predict_language(sentence: str):
+def predict_language(sentence: str, matrixNL, matrixEN) -> int:
     """ prediction model of with language the given sentence is writen in.
     Predicts between English and Dutch. 
 
     Args:
         sentence (str): Given sentence to predict the language of.
+
+    Return:
+        predicted language(int): 0(English) or 1(Dutch)
     """
     # generate matrix for sentence
+    sentence = pre_procces(sentence)
     matrix_sentence = getFreqMatrix(sentence)
 
-    diff_score_nl = sum(matrix_bookNL * matrix_sentence)
-    diff_score_en = sum(matrix_bookEN * matrix_sentence)
+    diff_score_nl = (matrixNL * matrix_sentence).sum()
+    diff_score_en = (matrixEN * matrix_sentence).sum()
 
-    print(diff_score_en, diff_score_nl)
+    if diff_score_en > diff_score_nl:
+        return 0
+    else: return 1
+
+def genMatrix(book: str):
+    # procces the  book and generate a freq matrix for it
+    book = pre_procces(book)
+
+    print("generating Matrix")
+    matrix_book = getFreqMatrix(book)
+
+    print("Normalizing Matrix")
+    matrix_book = np.divide(matrix_book, matrix_book.sum())
+
+    print("Done")
+    return matrix_book
+
+def test_model(test_set: list, matrixNL, matrixEN) -> None:
+    """This function tests the model with a set of unseen sentences.
+
+    Args:
+        test_set (list): list of sentences in dtring format with a target value
+    """
+    accuracy = []
+    for sentence_set in test_set:
+        if len(sentence_set[0]) > 10:
+            target = sentence_set[1]
+            output = predict_language(sentence_set[0], matrixNL, matrixEN)
+            if output == target:
+                accuracy.append(1)
+            else: accuracy.append(0)
+        
+    return (sum(accuracy)/len(accuracy))*100
+
+def gen_test_set(file_path: str, target: int):
+    test_set = ""
+    # generate a test set
+    with open(file_path) as file:
+        test_set = file.read()
+        test_set = pre_procces(test_set)
+        test_set = test_set.split(".")
+        test_set = list(zip(test_set, [target]*len(test_set)))
+
+    return test_set
 
 
 if __name__ == "__main__" :
-    # procces the english book and generate a freq matrix for it
-    bookEN = pre_procces(bookEN)
-    print(f"Pre-proccesing done on english book")
-    print("generating Matrix")
-    matrix_bookEN = getFreqMatrix(bookEN)
-    print("Done")
-
     # procces the dutch book and generate a freq matrix for it
-    bookNL = pre_procces(bookNL)
-    print(f"Pre-proccesing done on dutch book")
-    print("generating Matrix")
-    matrix_bookNL = getFreqMatrix(bookNL)
-    print("Done")
+    print("\nPre-proccesing Dutch book")
+    matrix_bookNL = genMatrix(bookNL)
 
-    predict_language("""And so it was indeed! She was now only ten inches high, and her face
-                        brightened up at the thought that she was now the right size for going
-                        through the little door into that lovely garden.""")
+    print("\nPre-proccesing English book")
+    # procces the english book and generate a freq matrix for it
+    matrix_bookEN = genMatrix(bookEN)
+
+    # test the models
+    test_set_nl = gen_test_set("data/nl/book3.txt", 1)
+    print(f"===========\nTesting Dutch sentences\n--")
+    print(f"Lenght of data set (NL):\t{len(test_set_nl)}")
+    print(f"Accuracy Score:\t{test_model(test_set_nl, matrix_bookNL, matrix_bookEN)}%")
+
+    test_set_en = gen_test_set("data/en/book1.txt", 0)
+    print(f"===========\nTesting English sentences\n--")
+    print(f"Lenght of data set:\t{len(test_set_en)}")
+    print(f"Accuracy Score:\t{test_model(test_set_en, matrix_bookNL, matrix_bookEN)}%")
