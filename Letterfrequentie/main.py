@@ -28,6 +28,14 @@ def pre_procces(text: str) -> str:
     return text
 
 def getFreqMatrix(text: str) -> np.array:
+    """generate and return a frequency matrix for the given text.
+
+    Args:
+        text (str): The given piece of text for wich a frequency matrix is generated.
+
+    Returns:
+        np.array: The frequency matrix of the given input.
+    """
     freq = {}
 
     for i in range(len(text)-1):
@@ -64,6 +72,15 @@ def predict_language(sentence: str, matrixNL, matrixEN) -> int:
     else: return 1
 
 def genMatrix(book: str):
+    """Intermidiate function to create a frequency matrix form a raw piece of text;
+    Typically use for larger pieces of text like entire books to use as a model for future predictions.
+
+    Args:
+        book (str): The given piece of text for wich a frequency matrix is generated.
+
+    Returns:
+        _type_: A frequency matrix of the given input.
+    """
     # procces the  book and generate a freq matrix for it
     book = pre_procces(book)
 
@@ -76,11 +93,14 @@ def genMatrix(book: str):
     print("Done")
     return matrix_book
 
-def test_model(test_set: list, matrixNL, matrixEN) -> None:
+def test_model(test_set: list, matrixNL, matrixEN) -> float:
     """This function tests the model with a set of unseen sentences.
 
     Args:
-        test_set (list): list of sentences in dtring format with a target value
+        test_set (list): list of sentences in dtring format with a target value.
+
+    Returns:
+        float: returns the avg accuracy of the predictions over the entire test set.
     """
     accuracy = []
     for sentence_set in test_set:
@@ -93,7 +113,16 @@ def test_model(test_set: list, matrixNL, matrixEN) -> None:
         
     return (sum(accuracy)/len(accuracy))*100
 
-def gen_test_set(file_path: str, target: int):
+def gen_test_set(file_path: str, target: int)-> list:
+    """generate a test set from a given text file.
+
+    Args:
+        file_path (str): Path to the you wish to make a test set for.
+        target (int): The target value to give the data set.
+
+    Returns:
+        list: Return the data set with target values attached to each record.
+    """
     test_set = ""
     # generate a test set
     with open(file_path) as file:
@@ -107,10 +136,10 @@ def gen_test_set(file_path: str, target: int):
 
 if __name__ == "__main__" :
     # procces the dutch book and generate a freq matrix for it
-    print("\nPre-proccesing Dutch book")
+    print("\nProccesing Dutch book")
     matrix_bookNL = genMatrix(bookNL)
 
-    print("\nPre-proccesing English book")
+    print("\nProccesing English book")
     # procces the english book and generate a freq matrix for it
     matrix_bookEN = genMatrix(bookEN)
 
