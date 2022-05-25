@@ -1,4 +1,4 @@
-textNL = """
+bookNL = """
                          FRITS MILLIOEN
 
                        EN ZIJNE VRIENDEN
